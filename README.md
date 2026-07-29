@@ -1,203 +1,111 @@
 # EternalDreams
 
-<p align="center">
-  <img alt="Engine" src="https://img.shields.io/badge/Unreal_Engine-5.5-0E1128?logo=unrealengine&logoColor=white" />
-  <img alt="Platform" src="https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white" />
-  <img alt="Mode" src="https://img.shields.io/badge/Mode-Multiplayer-2ea44f" />
-  <img alt="Gameplay Ability System" src="https://img.shields.io/badge/System-GAS-8250df" />
-  <img alt="UI" src="https://img.shields.io/badge/UI-CommonUI%20%2B%20UMG-1f6feb" />
-</p>
+> Unreal Engine 5.5 기반 GAS 멀티플레이 팀전 배틀로얄 액션 게임
 
-Unreal Engine 5.5 기반 멀티플레이 액션 프로젝트입니다.  
-이 문서는 `Source` 기준으로 프로젝트의 핵심 구조와 시스템 연결을 빠르게 파악할 수 있도록 정리한 **프로젝트 메인 README**입니다.
+**[▶ 시연 영상]([Eternal Dreams Demo Video - YouTube](https://www.youtube.com/watch?v=TQSDvPFhwYk&feature=youtu.be))** 
 
 ---
 
-## 📌 프로젝트 요약
+## 프로젝트 개요
 
-- **프로젝트 성격**: 로비 진입 -> 매치 진행(페이즈) -> 전투/파밍/크래프팅 -> 승패 판정
-- **기본 시작 맵**: `L_Lobby` (`Config/DefaultEngine.ini`)
-- **핵심 기술 축**: Multiplayer, GAS, CommonUI/UMG, AI Behavior Tree, Data-Driven Asset
-- **메인 런타임 모듈**: `Source/EternalDreams`
-- **에디터 보조 모듈**: `Source/GitStatusBranch`
+|             |                                                                                  |
+| ----------- | -------------------------------------------------------------------------------- |
+| **기간**      | 2026.03 ~ 2026.04 (2개월)                                                          |
+| **팀 구성**    | 6명 (프로그래머 6)                                                                     |
+| **본인 역할**   | 클라이언트 — 플레이어 GAS 전투 파이프라인 · 다무기 스킬/회피 어빌리티 · 메시 비동기 리플리케이션 · SkillComponent · UI |
+| **엔진 / 언어** | Unreal Engine 5.5 · C++                                                          |
+| **주요 기술**   | GAS, GameplayTags, EnhancedInput, CommonUI, UMG, Primary Data Asset, Niagara     |
 
-## 🧱 모듈 구성
-
-### `EternalDreams` (Runtime)
-
-- 위치: `Source/EternalDreams`
-- 빌드 설정: `Source/EternalDreams/EternalDreams.Build.cs`
-- 주요 의존성:
-  - `GameplayAbilities`, `GameplayTags`, `GameplayTasks`
-  - `CommonUI`, `UMG`, `EnhancedInput`
-  - `AIModule`, `NavigationSystem`, `Niagara`
-
-### `GitStatusBranch` (Editor)
-
-- 위치: `Source/GitStatusBranch`
-- 빌드 설정: `Source/GitStatusBranch/GitStatusBranch.Build.cs`
-- 목적: 에디터 전용 보조 기능
+> 팀 프로젝트입니다. 본 레포는 원본 저장소의 포크본이며, 아래 "본인 구현 범위"에 명시한 부분이 직접 작성한 코드입니다.
 
 ---
 
-## 🗺️ 코드 도메인 맵
+## 본인 구현 범위
 
-`Source/EternalDreams/Public` 기준:
+**[전체 커밋 보기](https://github.com/khs081215/7th-Team1-CH4-Project/commits/develop/?author=khs081215)**
 
-- `Core/`: 게임 인스턴스, 게임모드/게임스테이트, 로비 흐름, 데이터 서브시스템
-- `Characters/`: 플레이어/몬스터 캐릭터, 컨트롤러, 애니메이션 노티파이, GAS 어빌리티/속성
-- `AI/`: 몬스터 BT Task/Service/Decorator
-- `UI/`: HUD, 패널, 메시지, UI 서브시스템
-- `Inventory/`: 인벤토리 컴포넌트, 전송/장착/크래프팅/드랍 로직
-- `Item/`: 아이템 타입/핸들, DataAsset, DataTable Row 구조
-- `Environment/`: 라이팅 매니저, 제한 구역 등 월드 규칙 요소
-- `Interaction/`: 상호작용 대상 컴포넌트
-- `Data/`: 게임 공용 타입/태그/데이터 구조
-- `Tests/`: 인벤토리/크래프팅 디버그용 BP 라이브러리
-
----
-
-## 🔄 런타임 흐름
-
-### 1) 로비
-
-- `AEDLobbyGameMode`에서 접속/준비 상태를 관리
-- 준비 완료 조건 충족 시 게임 맵으로 이동
-- `UEDGameInstance`가 닉네임, 서버 접속, 로딩 화면 흐름을 담당
-
-### 2) 인게임 페이즈
-
-- `AEDGameMode`가 Day/Night 페이즈 사이클을 관리
-- 금지구역, 사망/관전/부활, 매치 종료 로직을 서버 권한으로 진행
-
-### 3) 전투
-
-- 플레이어: `AEDPlayerCharacter` + `UEDPlayerAttributeSet`
-- 몬스터: `AEDMonsterBase` + AI + Ability
-- 데미지 계산: `ExecCalc_Damage`
-- 게임플레이 태그: `FEDGameplayTags`
-
-### 4) 데이터 로딩
-
-- `UEDGameDataSubsystem`이 로비/UI/아이템/몬스터/플레이어 데이터를 단계적으로 로드
-- Primary Asset 캐시로 런타임 조회 성능/일관성 확보
+| 영역                                                                                                  | 주요 파일                                                                      |
+| --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| 플레이어 GAS 전투 파이프라인 (GA_Base · GA_BasicAttack · 회피 · 스킬 3종)                                           | `Source/EternalDreams/Public/Characters/Player/GAS/`                       |
+| SkillComponent (4슬롯 태그 관리 · 서버 RPC · SRP 설계)                                                        | `Source/EternalDreams/Public/Characters/Player/Component/SkillComponent.h` |
+| AnimNotify–GAS 히트 판정 브리지 (ANS_AttackTrace · ANS_AttackMove · AN_ProjectileAttack · AN_TeleportMove) | `Source/EternalDreams/Public/Characters/Player/AnimNotify/`                |
+| 메시 비동기 리플리케이션 + 핸드셰이크 게이트                                                                           | `Source/EternalDreams/Private/Characters/Player/EDPlayerCharacter.cpp`     |
+| 스킬 데미지 배수 테이블 · ExecCalc 연동                                                                         | `Source/EternalDreams/Public/Characters/Base/GAS/ExecCalc_Damage.h`        |
+| UI — 스킬 쿨타임 · 팀/적 오버레이 매트 · 출혈 HUD · 로딩 화면 · 스킨 선택 · 스킬 사운드                                         | `Source/EternalDreams/Public/UI/HUD/`                                      |
+| Native GameplayTags 싱글톤                                                                             | `Source/EternalDreams/Public/Data/GameplayTag/EDGameplayTags.h`            |
+| 독립 CameraActor (줌인/줌아웃 · 엣지 스크롤 · 포커스 토글)                                                           | `Source/EternalDreams/Public/Characters/Player/OtherActor/`                |
 
 ---
 
-## ⚔️ 주요 시스템 상세
+## 핵심 구현
 
-### 🎮 캐릭터 & 전투
+### 1. 멀티플레이 무기·캐릭터 메시 동기화 재설계
 
-- 플레이어/몬스터 모두 Ability System 기반 전투 파이프라인 사용
-- AttributeSet을 통해 체력/이동/전투 수치 관리
-- 애니메이션 노티파이와 능력 발동이 전투 판정과 연결됨
+**문제**
+무거운 메시 에셋을 직접 복제하거나 Multicast로 뿌리던 방식이어서, 클라이언트별 로드 완료 시점이 달라 수신 시점에 에셋이 미로드 상태이면 무기·캐릭터가 보이지 않는 동기화 실패가 간헐적으로 발생했다.
 
-### 🤖 AI & 몬스터
+**해결
 
-- Behavior Tree Task/Service/Decorator로 전투 행동 분리
-- 몬스터 스폰 서브시스템(`UEDMonsterSpawnSubsystem`)으로 등급별 스폰 제어
-- 몬스터 데이터는 데이터 에셋 + 서브시스템 조회 구조로 관리
+**
+복제 단위를 무거운 에셋 참조에서 가벼운 `FPrimaryAssetId`로 바꾸고(`Multicast` → `OnRep`), 각 클라이언트가 게임 시작 시 프리로드해둔 데이터에서 ID로 조회·적용하도록 전환했다. 나아가 서버와 전원 클라이언트의 로드 완료를 `GameMode`가 집계한 뒤 일괄 적용하는 핸드셰이크 게이트를 추가해, 모든 피어가 준비된 시점에만 메시를 세팅하도록 타이밍을 통일했다.
 
-### 🧩 UI & HUD
+**설계 판단**
 
-- `UEDUIManageSubsystem`이 레이어 기반 패널 오픈/토글/ESC 처리 담당
-- HUD, 상태창, 인벤토리, 크래프팅, 토스트 메시지를 컴포넌트/위젯 단위로 분리
-- CommonUI + UMG 혼합 구조로 UI 흐름을 구성
+Multicast 유지 + 재전송 재시도 방식도 검토했으나, 재시도 타이밍 관리가 복잡하고 에셋 크기 문제는 근본적으로 해결되지 않는다. `FPrimaryAssetId` 복제는 페이로드가 수 바이트에 불과하고, 프리로드 타이밍은 로비→인게임 전환 시점으로 이미 확보된 슬롯이어서 추가 비용이 없었다.
 
-### 🎒 인벤토리 & 아이템
-
-- 핵심: `UEDInventoryComponent`
-- 일반 슬롯 + 장비 슬롯 + 스킬 슬롯 지원
-- 드랍 액터(`AEDDroppedItemActor`) 생성/병합/픽업 처리
-- 크래프팅 테이블, 랜덤 루팅, 분배 로직을 데이터 중심으로 구성
-- 아이템 정의: `UEDInventoryItemDataAsset`, `FEDCraftingRecipeRow`, `FEDItemSpawnRow`
-
-### 🌍 환경 & 상호작용
-
-- 제한 구역/라이팅 시스템이 페이즈 진행과 연동
-- 루팅 타겟 컴포넌트를 통해 월드 오브젝트와 플레이어 상호작용 연결
+**결과**
+클라이언트별 로드 타이밍 불일치로 인한 간헐적 메시 미표시 현상을 해소했다.
 
 ---
 
-## 🌐 멀티플레이 원칙
+### 2. AnimNotify–GAS 히트 판정 브리지 설계
 
-- 상태 변경 로직은 **서버 권한 경로**를 기준으로 처리
-- 클라이언트는 사전 검증 후 요청하는 패턴 사용 권장
-- UI 표시의 최종 신뢰값은 서버 복제 결과 기준으로 반영
+**문제**
+무기 4종(검·해머·활·스태프)마다 일반공격 방식이 다르고, 스킬은 무기에 귀속되지 않고 파밍으로 획득되어 조합이 열려 있는 구조였다. 근접 판정 로직을 각 어빌리티에 직접 넣으면 어빌리티 수가 늘수록 판정 코드가 중복되고, 타격 타이밍이 애니메이션에 묶여 수정이 번거로워진다.
 
----
+**해결**
+`AnimNotifyState`의 `NotifyTick`에서 `SphereTraceMulti`로 히트 판정을 수행하고, `HasAuthority` 가드 + 콤보 내 중복 타격 방지를 적용했다. 판정 결과는 `HandleGameplayEvent(Event.SkillHit)`로 발행하고, GA가 `WaitGameplayEvent`로 구독해 팀 ID 검증 후 데미지 GE를 적용하는 구조로 판정과 어빌리티 로직을 분리했다.
 
-## 📁 주요 폴더 구조
+**설계 판단**
+GE를 ANS에서 직접 적용하는 방식도 가능하지만, GA가 히트 이후 처리(콤보 연계·이펙트·카운터 등)를 알 수 없다. GameplayEvent를 경유하면 ANS는 "히트를 알린다"는 단일 책임만 가지고, GA는 이벤트 수신 후 자유롭게 후처리를 확장할 수 있다. 원거리(활·스태프)는 발사체 착탄 시 판정 경로가 분리되나, 데미지 계산은 동일한 `ExecCalc_Damage`를 공유했다.
 
-```text
-Source/
-  EternalDreams/
-    Public/
-      AI/
-      Characters/
-      Core/
-      Data/
-      Environment/
-      Interaction/
-      Inventory/
-      Item/
-      Tests/
-      UI/
-    Private/
-      ...
-  GitStatusBranch/
-Config/
-Content/
+**결과**
+신규 근접 스킬 추가 시 몽타주에 ANS를 배치하는 것만으로 판정 코드를 재사용할 수 있다.
+
+```cpp
+// ANS_AttackTrace::NotifyTick — 서버 전용 히트 감지 후 GAS 이벤트 발행
+if (!Owner->HasAuthority()) return;
+
+TArray<FHitResult> HitResults;
+UKismetSystemLibrary::SphereTraceMulti(..., HitResults);
+
+for (const FHitResult& Hit : HitResults)
+{
+    if (Owner->HittedCharacterArray.Contains(Hit.GetActor())) continue;
+    Owner->HittedCharacterArray.Add(Hit.GetActor());
+
+    FGameplayEventData Payload;
+    Payload.Target = Hit.GetActor();
+    UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+        Owner, FEDGameplayTags::Get().Event_SkillHit, Payload);
+}
 ```
 
 ---
 
-## 🚀 시작하기
+## 빌드 및 실행
 
-### 1) 프로젝트 열기
-
-```powershell
-# Rider/Visual Studio에서 솔루션 열기
-EternalDreams.sln
+```
+엔진 버전 : Unreal Engine 5.5
+필요 항목 : Visual Studio 2022 / Git LFS
 ```
 
-또는
-
-```powershell
-# Unreal Editor에서 프로젝트 열기
-EternalDreams.uproject
-```
-
-### 2) 빌드/실행 (에디터 환경)
-
-- 에디터에서 C++ 컴파일 후 PIE로 로비/네트워크 시나리오를 검증합니다.
-- 기본 시작 맵 및 게임 인스턴스는 `Config/DefaultEngine.ini` 기준입니다.
+1. 레포를 클론합니다.
+2. `EternalDreams.uproject` 우클릭 → Generate Visual Studio project files
+3. `EternalDreams.sln` 빌드 (`EternalDreamsEditor | Win64 | Development`) 후 에디터 실행
 
 ---
 
-## ✅ 협업 체크리스트
+## 참고
 
-- 기능 수정 시 C++ 로직 + 데이터 에셋/테이블 + UI 바인딩을 함께 점검
-- 멀티플레이 기능은 서버/클라 권한 경계와 복제 타이밍을 반드시 확인
-- 신규 시스템 추가 시 도메인 분리(`Public`/`Private`)와 책임 경계를 명확히 유지
-
-## 📸 스크린샷
-
-### 로비
-
-![로비 스크린샷 자리](./Screenshot/Lobby.png)
-
-### 전투
-
-![전투 스크린샷 자리](./Screenshot/Battle.png)
-
-### 인벤토리 / 크래프팅
-
-![인벤토리 스크린샷 자리](./Screenshot/Inv.png)
-![인벤토리 스크린샷 자리](./Screenshot/InvOther.png)
-
-### 승리
-
-![승리 스크린샷 자리](./Screenshot/Victory.png)
-
----
+- [원본 팀 저장소](https://github.com/NbcampUnreal/7th-Team1-CH4-Project)
