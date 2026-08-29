@@ -206,7 +206,7 @@ void UGA_Base::OnNotifyHitEvent(FGameplayEventData HitGameplayEventData)
 	FGameplayEffectSpecHandle SpecHandle = PlayerASC->MakeOutgoingSpec(DamageEffectClass, 1.0f, Context);
 
 	const UEDPlayerAttributeSet* PlayerAttributeSet = Cast<UEDPlayerAttributeSet>(PlayerASC->GetAttributeSet(UEDPlayerAttributeSet::StaticClass()));
-	if (SpecHandle.IsValid() || IsValid(PlayerAttributeSet))
+	if (SpecHandle.IsValid() && IsValid(PlayerAttributeSet))
 	{
 		//AssetTag 로 검색
 		const FGameplayTagContainer& AssetTags=GetAssetTags();
