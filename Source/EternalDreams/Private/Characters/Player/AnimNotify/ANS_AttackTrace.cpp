@@ -115,7 +115,7 @@ void UANS_AttackTrace::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenc
 		ACharacter* HittedCharacter=Cast<ACharacter>(HittedActor);
 		if (!IsValid(HittedCharacter))
 		{
-			return;
+			continue;
 		}
 		
 		HittedCharacter->GetCharacterMovement()->Velocity=FVector::ZeroVector;
